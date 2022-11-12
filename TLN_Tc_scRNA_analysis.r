@@ -149,9 +149,9 @@ Tc.features <- c("nitr2b","nitr6b", # 0-Naive-1
                  "bcl11ba","rag1","rag2", # 9-rag1/2+ T
                  "ccl33.3","lcp2b", # 7-Lymphocyte-like
                  )
-DimPlot(ctrlTonly.epirm, group.by = "Tc_identity", order = rev(c("Naive T cell-like-1","Naive T cell-like-2","Cycling T cell","Cytotoxic T cell-1","Cytotoxic T cell-2","ccl38.6-high T cell", "Regulatory-like T cell","Th2 cell/ILC2" ,"rag1/2+ T cell", "Lymphocyte-like"))) # Figure 2G
-DotPlot(ctrlTonly.epirm, features = Tc.features.epirm, group.by = "Tc_identity") + RotatedAxis() # Supp figure 3C
-FeaturePlot(ctrlTonly.epirm, features = Tc.features.epirm)  
+DimPlot(ctrlTonly.epirm, group.by = "Tc_identity", order = rev(c("Naive T cell-like-1","Naive T cell-like-2","Cycling T cell","Cytotoxic T cell-1","Cytotoxic T cell-2","ccl38.6-high T cell", "Regulatory-like T cell","Th2 cell/ILC2" ,"rag1/2+ T cell", "Lymphocyte-like"))) # Figure S2G
+DotPlot(ctrlTonly.epirm, features = Tc.features.epirm, group.by = "Tc_identity") + RotatedAxis() # Figure S2F
+FeaturePlot(ctrlTonly.epirm, features = Tc.features.epirm) # Figure S2H
 
 #3. Add detailed subtypes back to control
 # Simplify Tc subset identities 
@@ -169,7 +169,7 @@ ctrlT.sub <- SetIdent(ctrlT.sub, cells = Tc.LL, value ="Lymphocyte-like" )
 ctrlT.sub <- SetIdent(ctrlT.sub, cells = Tc.Tc, value ="T cell" )
 ctrlT.sub <- StashIdent(ctrlT.sub, save.name = "high_res_IDs")
 # Visualization 
-DimPlot(ctrlT.sub, group.by = "high_res_IDs", order = rev(c("T cell","Lymphocyte-like","Dendritic cell-like","B cell","Macrophage","Neutrophil","Erythrocyte","Thrombocyte","Superficial epithelial","Ionocyte","Intermediate epithelial","Basal epithelial","Mesenchymal","Lateral line-like","Epidermal mucous Cell","Others-Epithelial cell")),cols = DiscretePalette_scCustomize(num_colors = 16, palette = "ditto_seq")) # Figure 2F
+DimPlot(ctrlT.sub, group.by = "high_res_IDs", order = rev(c("T cell","Lymphocyte-like","Dendritic cell-like","B cell","Macrophage","Neutrophil","Erythrocyte","Thrombocyte","Superficial epithelial","Ionocyte","Intermediate epithelial","Basal epithelial","Mesenchymal","Lateral line-like","Epidermal mucous Cell","Others-Epithelial cell")),cols = DiscretePalette_scCustomize(num_colors = 16, palette = "ditto_seq")) # Figure 2J
 # Major population marker check. simplified
 all.major.ft.simp <- c(# "mki67","top2a", # cell cycle
                           "cd247l","lck", # general Tc
@@ -190,11 +190,19 @@ all.major.ft.simp <- c(# "mki67","top2a", # cell cycle
                           )
 DefaultAssay(ctrlT.sub) <- "RNA"
 ctrlT.sub[["relev_high_res_IDs"]] <- factor(ctrlT.sub$high_res_IDs, levels = rev(c("T cell","Lymphocyte-like","Dendritic cell-like","B cell","Macrophage","Neutrophil","Erythrocyte","Thrombocyte","Superficial epithelial","Ionocyte","Intermediate epithelial","Basal epithelial","Mesenchymal","Lateral line-like","Epidermal mucous Cell","Others-Epithelial cell")))
-DotPlot(ctrlT.sub, features = all.major.ft.simp, group.by = "relev_high_res_IDs") + RotatedAxis() # Supp Figure 3B
+DotPlot(ctrlT.sub, features = all.major.ft.simp, group.by = "relev_high_res_IDs") + RotatedAxis() # Figure S2E
 # Population structure
-dittoBarPlot(object = ctrlT.sub, var = "high_res_IDs", group.by = "orig.ident", var.labels.reorder = c(15,9,3,1,10,12,5,16,14,7,6,2,11,8,4,13)) # Supp Figure 3A
+dittoBarPlot(object = ctrlT.sub, var = "high_res_IDs", group.by = "orig.ident", var.labels.reorder = c(15,9,3,1,10,12,5,16,14,7,6,2,11,8,4,13)) # Figure S2D
 # All features on UMAP
-FeaturePlot(ctrlT.sub, features = all.major.ft.simp) # Supp Figure 4
+FeaturePlot(ctrlT.sub, features = all.major.ft.simp) #
+
+## Chemokine + receptor 
+# Concise chemokine and receptors
+receptors <- c("cxcr4a","cxcr4b","ccr7","cxcr5")
+chemokines <- c("cxcl12a","cxcl12b","ccl19a.1","ccl19a.2","ccl19b","ccl25a","ccl25b","cxcl13")
+DotPlot(ctrlT.sub, features = receptors ,group.by = "relev_high_res_IDs") + RotatedAxis() # Figure 2K
+DotPlot(ctrlT.sub, features = chemokines ,group.by = "relev_high_res_IDs") + RotatedAxis() # Figure 2L
+
 
 #**************************************
 # Control-Infected integrative analysis
@@ -281,17 +289,22 @@ Tc.stringent.ft <- c("ccr7","cxcr4a", # naive T
                      "nkl.2","ccr2","prf1.9", # CTL-2
                      "ifng1" # sign of activation
                      )
-DimPlot(integrated.Tc.inte, reduction = "umap", group.by = "Relev_ID", cols = subtype.colors,order = rev(c("Naive T cell-like","Cycling T cell","Regulatory T cell-1","Regulatory T cell-2","Cytotoxic T cell-1","Cytotoxic T cell-2"))) # Supp Figure 9A
+DimPlot(integrated.Tc.inte, reduction = "umap", group.by = "Relev_ID", cols = subtype.colors,order = rev(c("Naive T cell-like","Cycling T cell","Regulatory T cell-1","Regulatory T cell-2","Cytotoxic T cell-1","Cytotoxic T cell-2"))) # Figure S3D
 DefaultAssay(integrated.Tc.inte) <- "RNA"
 integrated.Tc.inte[["Relev_ID"]] <- factor(integrated.Tc.inte$Identity, levels = rev(c("Naive T cell-like","Cycling T cell","Regulatory T cell-1","Regulatory T cell-2","Cytotoxic T cell-1","Cytotoxic T cell-2")))
 # Add orig.ident to the subtypes to show the control to infected comparison
 integrated.Tc.inte[["Relev_ID_split"]] <- paste(integrated.Tc.inte$Relev_ID, integrated.Tc.inte$orig.ident, sep = "_")
 # Relevel IDs
 integrated.Tc.inte[["Relev_ID_split"]] <- factor(integrated.Tc.inte$Relev_ID_split, levels = rev(c("Naive T cell-like_ctrl","Naive T cell-like_infected","Cycling T cell_ctrl","Cycling T cell_infected","Regulatory T cell-1_ctrl","Regulatory T cell-1_infected","Regulatory T cell-2_ctrl","Regulatory T cell-2_infected","Cytotoxic T cell-1_ctrl","Cytotoxic T cell-1_infected","Cytotoxic T cell-2_ctrl","Cytotoxic T cell-2_infected")))
-DotPlot(integrated.Tc.inte, features = Tc.stringent.ft, group.by = "Relev_ID_split") + RotatedAxis() # Supp Figure 9B
-FeaturePlot(integrated.Tc.inte, features = Tc.stringent.ft) # Supp Figure 9C
+DotPlot(integrated.Tc.inte, features = Tc.stringent.ft, group.by = "Relev_ID_split") + RotatedAxis() # Figure S3E
+FeaturePlot(integrated.Tc.inte, features = Tc.stringent.ft) #
 # Naive T cell-like and cycling T cell comparisons 
 Idents(integrated.Tc.inte) <- "Relev_ID"
 VlnPlot(integrated.Tc.inte, features = "ccr7", idents = c("Naive T cell-like","Cycling T cell"), split.by = "orig.ident") # Figure 4K
 VlnPlot(integrated.Tc.inte, features = "cd28l", idents = c("Naive T cell-like","Cycling T cell"), split.by = "orig.ident") # Figure 4L
 VlnPlot(integrated.Tc.inte, features = "ifng1", idents = c("Naive T cell-like","Cycling T cell"), split.by = "orig.ident") # Figure 4M
+
+
+
+
+
